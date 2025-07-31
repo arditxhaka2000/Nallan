@@ -142,18 +142,8 @@
     }
     /* Mobile product grid - 2 columns */
     /* Plus button styling - mobile only */
-    @@media (max-width: 768px) {
-        #owl-carousel-14 .item {
-            width: 100%;
-            aspect-ratio: 1811 / 849; /* Maintains exact aspect ratio */
-        }
-
-            #owl-carousel-14 .item img {
-                width: 100% !important;
-                height: 100% !important;
-                object-fit: cover !important;
-                object-position: center !important;
-            }
+    @@media (max-width: 568px) {
+        
     }
 
     /* Hide original button on mobile */
@@ -180,13 +170,6 @@
             text-decoration: none;
         }
 
-
-    /* Desktop - hide plus button, show original */
-    @@media (min-width: 769px) {
-        .add-btn-circle {
-            display: none !important;
-        }
-    }
 
     @@media (max-width: 500px) {
         /* Product title */
@@ -240,6 +223,23 @@
         .product-details .col-12 {
             margin-bottom: 6px !important;
         }
+
+    }
+    @@media (max-width: 768px) {
+        #owl-carousel-14 .item
+
+    {
+        width: 100% !important;
+        height: 500px !important; /* or whatever height value worked for you */
+    }
+
+    #owl-carousel-14 .item img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+
     }
 </style>
 @* Pjesa e caruselit *@
