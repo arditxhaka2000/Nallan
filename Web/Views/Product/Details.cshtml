@@ -221,6 +221,69 @@
 		.product-main {
 			border: none !important;
 		}
+
+		.col-xl-3.col-sm-4.align-items-center.mb-3.mt-4 {
+			flex: none !important;
+			width: auto !important;
+			max-width: 150px !important;
+		}
+		/* Remove dark background from fieldset */
+		.qty-box.bg-dark {
+			background: transparent !important;
+		}
+		/* Fix the input group */
+		.qty-box .input-group.bootstrap-touchspin {
+			display: flex !important;
+			flex-direction: row !important;
+			width: 120px !important;
+			border: 1px solid #dee2e6 !important;
+			border-radius: 4px !important;
+			overflow: hidden !important;
+		}
+		/* Fix the buttons - override btn-primary */
+		.bootstrap-touchspin-down.btn-primary,
+		.bootstrap-touchspin-up.btn-primary {
+			background: white !important;
+			border: none !important;
+			color: #333 !important;
+			width: 30px !important;
+			height: 38px !important;
+			padding: 0 !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+		}
+
+			.bootstrap-touchspin-down.btn-primary:hover,
+			.bootstrap-touchspin-up.btn-primary:hover {
+				background: #f8f9fa !important;
+				color: #333 !important;
+			}
+		/* Fix the input */
+		.qty-box .touchspin.form-control {
+			background: white !important;
+			border: none !important;
+			flex: 1 !important;
+			text-align: center !important;
+			box-shadow: none !important;
+			border-left: 1px solid #dee2e6 !important;
+			border-right: 1px solid #dee2e6 !important;
+		}
+
+		.page-body {
+			margin-top: 0 !important;
+			padding-top: 0 !important;
+		}
+
+		.container-fluid .page-header {
+			margin-bottom: 0 !important;
+			padding-bottom: 0 !important;
+		}
+
+		.page-header .row.mt-5 {
+			margin-top: 0.5rem !important;
+			margin-bottom: 0.5rem !important;
+		}
 	}
 </style>
 
