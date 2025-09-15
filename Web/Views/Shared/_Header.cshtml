@@ -5,757 +5,747 @@
 @inject UserManager<Data.AppUser> UserManager
 
 @{
-    var currentLanguage = ViewContext.RouteData.Values["lang"]?.ToString() ?? "sq";
-    var sharedRes = ViewData["Shared"] as Dictionary<string, string> ?? new Dictionary<string, string>();
+	var currentLanguage = ViewContext.RouteData.Values["lang"]?.ToString() ?? "sq";
+	var sharedRes = ViewData["Shared"] as Dictionary<string, string> ?? new Dictionary<string, string>();
 }
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <style>
-    /* Keep your original desktop header styles */
-    .nav-item.dropdown:hover .dropdown-menu {
-        display: block;
-        margin-top: 0;
-    }
+	/* Keep your original desktop header styles */
+	.nav-item.dropdown:hover .dropdown-menu {
+		display: block;
+		margin-top: 0;
+	}
 
-    /* Updated Mobile Header Styles */
-    .nallan-mobile-header {
-        background-color: white;
-        border-bottom: 1px solid #e9ecef;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        height: 120px; /* Increased height to accommodate search row */
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        display: none; /* Hidden by default */
-    }
+	/* Updated Mobile Header Styles */
+	.nallan-mobile-header {
+		background-color: white;
+		border-bottom: 1px solid #e9ecef;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 1000;
+		height: 120px; /* Increased height to accommodate search row */
+		box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+		display: none; /* Hidden by default */
+	}
 
-    .nallan-mobile-header-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        padding: 0 15px;
-        width: 100%;
-        margin: 0 auto;
-    }
+	.nallan-mobile-header-container {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		padding: 0 15px;
+		width: 100%;
+		margin: 0 auto;
+	}
 
-    /* Top row with hamburger, logo, and icons */
-    .nallan-mobile-header-top {
-        display: flex;
-        align-items: center;
-        height: 70px;
-        position: relative;
-    }
+	/* Top row with hamburger, logo, and icons */
+	.nallan-mobile-header-top {
+		display: flex;
+		align-items: center;
+		height: 70px;
+		position: relative;
+	}
 
-    /* Bottom row with search */
-    .nallan-mobile-header-bottom {
-        display: flex;
-        align-items: center;
-        height: 50px;
-        padding: 0 10px;
-        border-top: 1px solid #f0f0f0;
-    }
+	/* Bottom row with search */
+	.nallan-mobile-header-bottom {
+		display: flex;
+		align-items: center;
+		height: 50px;
+		padding: 0 10px;
+		border-top: 1px solid #f0f0f0;
+	}
 
-    /* Mobile Menu Toggle */
-    .nallan-mobile-menu-toggle {
-        background: none;
-        border: none;
-        font-size: 28px;
-        color: #333;
-        cursor: pointer;
-        padding: 12px;
-        border-radius: 4px;
-        transition: background-color 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 50px;
-        height: 50px;
-        position: absolute;
-        left: 0;
-        z-index: 10;
-    }
+	/* Mobile Menu Toggle */
+	.nallan-mobile-menu-toggle {
+		background: none;
+		border: none;
+		font-size: 28px;
+		color: #333;
+		cursor: pointer;
+		padding: 12px;
+		border-radius: 4px;
+		transition: background-color 0.3s ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 50px;
+		height: 50px;
+		position: absolute;
+		left: 0;
+		z-index: 10;
+	}
 
-        .nallan-mobile-menu-toggle:hover {
-            background-color: #f8f9fa;
-        }
+		.nallan-mobile-menu-toggle:hover {
+			background-color: #f8f9fa;
+		}
 
-    /* Mobile Logo */
-    .nallan-mobile-logo {
-        font-size: 24px;
-        font-weight: 300;
-        color: #333;
-        text-decoration: none;
-        letter-spacing: 2px;
-        text-transform: lowercase;
-        display: flex;
-        align-items: center;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 5;
-    }
+	/* Mobile Logo */
+	.nallan-mobile-logo {
+		font-size: 24px;
+		font-weight: 300;
+		color: #333;
+		text-decoration: none;
+		letter-spacing: 2px;
+		text-transform: lowercase;
+		display: flex;
+		align-items: center;
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 5;
+	}
 
-        .nallan-mobile-logo img {
-            max-height: 35px;
-            width: auto;
-        }
+		.nallan-mobile-logo img {
+			max-height: 35px;
+			width: auto;
+		}
 
-        .nallan-mobile-logo:hover {
-            color: #00B3B7;
-            text-decoration: none;
-        }
+		.nallan-mobile-logo:hover {
+			color: #00B3B7;
+			text-decoration: none;
+		}
 
-    /* Mobile Icons */
-    .nallan-mobile-header-icons {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        position: absolute;
-        right: 0;
-        z-index: 10;
-    }
+	/* Mobile Icons */
+	.nallan-mobile-header-icons {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		position: absolute;
+		right: 0;
+		z-index: 10;
+	}
 
-    .nallan-mobile-icon-btn {
-        background: none;
-        border: none;
-        font-size: 16px;
-        color: #333;
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 4px;
-        transition: background-color 0.3s ease;
-        position: relative;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-    }
+	.nallan-mobile-icon-btn {
+		background: none;
+		border: none;
+		font-size: 16px;
+		color: #333;
+		cursor: pointer;
+		padding: 8px;
+		border-radius: 4px;
+		transition: background-color 0.3s ease;
+		position: relative;
+		text-decoration: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+	}
 
-        .nallan-mobile-icon-btn:hover {
-            background-color: #f8f9fa;
-            color: #333;
-            text-decoration: none;
-        }
+		.nallan-mobile-icon-btn:hover {
+			background-color: #f8f9fa;
+			color: #333;
+			text-decoration: none;
+		}
 
-    /* Mobile Language flag styling */
-    .nallan-mobile-lang-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 4px;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: none;
-        border: none;
-        transition: background-color 0.3s ease;
-    }
+	/* Mobile Language flag styling */
+	.nallan-mobile-lang-btn {
+		width: 36px;
+		height: 36px;
+		border-radius: 4px;
+		overflow: hidden;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: none;
+		border: none;
+		transition: background-color 0.3s ease;
+	}
 
-        .nallan-mobile-lang-btn:hover {
-            background-color: #f8f9fa;
-        }
+		.nallan-mobile-lang-btn:hover {
+			background-color: #f8f9fa;
+		}
 
-        .nallan-mobile-lang-btn .flag-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-        }
+		.nallan-mobile-lang-btn .flag-icon {
+			font-size: 16px;
+			width: 16px;
+			height: 16px;
+		}
 
-    /* Mobile Cart badge */
-    .nallan-mobile-cart-badge {
-        position: absolute;
-        top: 3px;
-        right: 3px;
-        background-color: #00B3B7;
-        color: white;
-        border-radius: 50%;
-        width: 14px;
-        height: 14px;
-        font-size: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+	/* Mobile Cart badge */
+	.nallan-mobile-cart-badge {
+		position: absolute;
+		top: 3px;
+		right: 3px;
+		background-color: #00B3B7;
+		color: white;
+		border-radius: 50%;
+		width: 14px;
+		height: 14px;
+		font-size: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	}
 
-    /* Static Search Bar Styles */
-    .nallan-mobile-search-bar {
-        flex: 1;
-        display: flex;
-        align-items: center;
-    }
+	/* Static Search Bar Styles */
+	.nallan-mobile-search-bar {
+		flex: 1;
+		display: flex;
+		align-items: center;
+	}
 
-    .nallan-mobile-search-form {
-        display: flex;
-        width: 100%;
-        gap: 8px;
-    }
+	.nallan-mobile-search-form {
+		display: flex;
+		width: 100%;
+		gap: 8px;
+	}
 
-        .nallan-mobile-search-form input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            background-color: #f8f9fa;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
+		.nallan-mobile-search-form input {
+			flex: 1;
+			padding: 10px 12px;
+			border: 1px solid #ddd;
+			border-radius: 6px;
+			font-size: 14px;
+			background-color: #f8f9fa;
+			transition: border-color 0.3s ease, background-color 0.3s ease;
+		}
 
-            .nallan-mobile-search-form input:focus {
-                outline: none;
-                border-color: #00B3B7;
-                background-color: white;
-            }
+			.nallan-mobile-search-form input:focus {
+				outline: none;
+				border-color: #00B3B7;
+				background-color: white;
+			}
 
-        .nallan-mobile-search-form button {
-            background: #00B3B7;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 12px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 44px;
-        }
+		.nallan-mobile-search-form button {
+			background: #00B3B7;
+			color: white;
+			border: none;
+			border-radius: 6px;
+			padding: 10px 12px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 44px;
+		}
 
-            .nallan-mobile-search-form button:hover {
-                background: #008B8D;
-            }
+			.nallan-mobile-search-form button:hover {
+				background: #008B8D;
+			}
 
-    /* Mobile User dropdown styles */
-    .nallan-mobile-user-dropdown {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: white;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        padding: 10px 0;
-        min-width: 180px;
-        z-index: 1003;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-    }
+	/* Mobile User dropdown styles */
+	.nallan-mobile-user-dropdown {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		background: white;
+		border: 1px solid #e9ecef;
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		padding: 10px 0;
+		min-width: 180px;
+		z-index: 1003;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-10px);
+		transition: all 0.3s ease;
+	}
 
-        .nallan-mobile-user-dropdown.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
+		.nallan-mobile-user-dropdown.active {
+			opacity: 1;
+			visibility: visible;
+			transform: translateY(0);
+		}
 
-        .nallan-mobile-user-dropdown a,
-        .nallan-mobile-user-dropdown button {
-            display: block;
-            width: 100%;
-            padding: 12px 20px;
-            color: #333;
-            text-decoration: none;
-            background: none;
-            border: none;
-            text-align: left;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-size: 14px;
-        }
+		.nallan-mobile-user-dropdown a,
+		.nallan-mobile-user-dropdown button {
+			display: block;
+			width: 100%;
+			padding: 12px 20px;
+			color: #333;
+			text-decoration: none;
+			background: none;
+			border: none;
+			text-align: left;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+			font-size: 14px;
+		}
 
-            .nallan-mobile-user-dropdown a:hover,
-            .nallan-mobile-user-dropdown button:hover {
-                background-color: #f8f9fa;
-                text-decoration: none;
-                color: #333;
-            }
+			.nallan-mobile-user-dropdown a:hover,
+			.nallan-mobile-user-dropdown button:hover {
+				background-color: #f8f9fa;
+				text-decoration: none;
+				color: #333;
+			}
 
-    /* Mobile Side Menu Overlay */
-    .nallan-mobile-menu-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1001;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-    }
+	/* Mobile Side Menu Overlay */
+	.nallan-mobile-menu-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 1001;
+		opacity: 0;
+		visibility: hidden;
+		transition: all 0.3s ease;
+	}
 
-        .nallan-mobile-menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+		.nallan-mobile-menu-overlay.active {
+			opacity: 1;
+			visibility: visible;
+		}
 
-    /* Mobile Side Menu */
-    .nallan-mobile-side-menu {
-        position: fixed;
-        top: 0;
-        left: -80vw;
-        width: 80vw;
-        height: 100%;
-        background-color: white;
-        z-index: 1002;
-        transition: left 0.3s ease;
-        display: flex;
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        flex-direction: column;
-    }
+	/* Mobile Side Menu */
+	.nallan-mobile-side-menu {
+		position: fixed;
+		top: 0;
+		left: -80vw;
+		width: 80vw;
+		height: 100%;
+		background-color: white;
+		z-index: 1002;
+		transition: left 0.3s ease;
+		display: flex;
+		box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+		flex-direction: column;
+	}
 
-        .nallan-mobile-side-menu.active {
-            left: 0;
-        }
+		.nallan-mobile-side-menu.active {
+			left: 0;
+		}
 
-    /* Mobile Menu Content */
-    .nallan-mobile-menu-content {
-        flex: 1;
-        padding: 30px 25px;
-        overflow-y: auto;
-    }
+	/* Mobile Menu Content */
+	.nallan-mobile-menu-content {
+		flex: 1;
+		padding: 30px 25px;
+		overflow-y: auto;
+	}
 
-    .nallan-mobile-menu-close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: none;
-        border: none;
-        font-size: 24px;
-        cursor: pointer;
-        color: #666;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        transition: background-color 0.3s ease;
-    }
+	.nallan-mobile-menu-close {
+		position: absolute;
+		top: 20px;
+		right: 20px;
+		background: none;
+		border: none;
+		font-size: 24px;
+		cursor: pointer;
+		color: #666;
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		transition: background-color 0.3s ease;
+	}
 
-        .nallan-mobile-menu-close:hover {
-            background-color: #f8f9fa;
-        }
+		.nallan-mobile-menu-close:hover {
+			background-color: #f8f9fa;
+		}
 
-    .nallan-mobile-menu-section {
-        margin-bottom: 35px;
-    }
+	.nallan-mobile-menu-section {
+		margin-bottom: 35px;
+	}
 
-    .nallan-mobile-menu-title {
-        font-size: 11px;
-        font-weight: 500;
-        color: #888;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 18px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid #e9ecef;
-    }
+	.nallan-mobile-menu-title {
+		font-size: 11px;
+		font-weight: 500;
+		color: #888;
+		text-transform: uppercase;
+		letter-spacing: 1.5px;
+		margin-bottom: 18px;
+		padding-bottom: 8px;
+		border-bottom: 1px solid #e9ecef;
+	}
 
-    .nallan-mobile-menu-item {
-        display: block;
-        padding: 12px 0;
-        color: #333;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 300;
-        transition: color 0.3s ease, padding-left 0.3s ease;
-        border-bottom: 1px solid #f8f9fa;
-        cursor: pointer;
-    }
+	.nallan-mobile-menu-item {
+		display: block;
+		padding: 12px 0;
+		color: #333;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 300;
+		transition: color 0.3s ease, padding-left 0.3s ease;
+		border-bottom: 1px solid #f8f9fa;
+		cursor: pointer;
+	}
 
-        .nallan-mobile-menu-item:hover {
-            color: #00B3B7;
-            padding-left: 15px;
-            text-decoration: none;
-        }
+		.nallan-mobile-menu-item:hover {
+			color: #00B3B7;
+			padding-left: 15px;
+			text-decoration: none;
+		}
 
-        .nallan-mobile-menu-item.expandable::after {
-            content: '>';
-            float: right;
-            color: #999;
-            font-weight: 300;
-        }
+		.nallan-mobile-menu-item.expandable::after {
+			content: '>';
+			float: right;
+			color: #999;
+			font-weight: 300;
+		}
 
-    /* Mobile Submenu styles - shown inline */
-    .nallan-mobile-submenu {
-        margin-left: 20px;
-        padding-top: 10px;
-        display: none;
-    }
+	/* Mobile Submenu styles - shown inline */
+	.nallan-mobile-submenu {
+		margin-left: 20px;
+		padding-top: 10px;
+		display: none;
+	}
 
-        .nallan-mobile-submenu.active {
-            display: block;
-        }
+		.nallan-mobile-submenu.active {
+			display: block;
+		}
 
-        .nallan-mobile-submenu .nallan-mobile-menu-item {
-            font-size: 13px;
-            padding: 8px 0;
-            color: #666;
-            border-bottom: none;
-        }
+		.nallan-mobile-submenu .nallan-mobile-menu-item {
+			font-size: 13px;
+			padding: 8px 0;
+			color: #666;
+			border-bottom: none;
+		}
 
-            .nallan-mobile-submenu .nallan-mobile-menu-item:hover {
-                color: #00B3B7;
-                padding-left: 10px;
-            }
+			.nallan-mobile-submenu .nallan-mobile-menu-item:hover {
+				color: #00B3B7;
+				padding-left: 10px;
+			}
 
-    /* Show mobile header only on mobile */
-    @@media (max-width: 768px) {
-        /* Hide desktop header */
-        .page-main-header
+	/* Show mobile header only on mobile */
+	@@media (max-width: 768px) {
+		/* Hide desktop header */
+		.page-main-header {
+			display: none !important;
+		}
 
-    {
-        display: none !important;
-    }
+		.d-block.d-lg-none {
+			display: none !important;
+		}
+		/* Show mobile header */
+		.nallan-mobile-header {
+			display: block !important;
+		}
+		/* Body padding for mobile header - increased for new height */
+		body {
+			padding-top: 120px !important;
+		}
+	}
 
-    .d-block.d-lg-none {
-        display: none !important;
-    }
-    /* Show mobile header */
-    .nallan-mobile-header {
-        display: block !important;
-    }
-    /* Body padding for mobile header - increased for new height */
-    body {
-        padding-top: 120px !important;
-    }
+	/* On desktop, hide mobile header */
+	@@media (min-width: 769px) {
+		.nallan-mobile-header {
+			display: none !important;
+		}
+		/* Remove mobile body padding on desktop */
+		body {
+			padding-top: 0 !important;
+		}
+	}
 
-    }
-
-    /* On desktop, hide mobile header */
-    @@media (min-width: 769px) {
-        .nallan-mobile-header
-
-    {
-        display: none !important;
-    }
-    /* Remove mobile body padding on desktop */
-    body {
-        padding-top: 0 !important;
-    }
-
-    }
-
-    @@media(max - width: 420px)
-
-    {
-        .nallan-mobile-header-icons > div:first-child
-
-    {
-        display: none !important;
-    }
-
-    }
+	@@media(max - width: 420px) {
+		.nallan-mobile-header-icons > div:first-child {
+			display: none !important;
+		}
+	}
 </style>
 
 <!-- Your Original Desktop Header (unchanged) -->
 <div class="page-main-header d-none d-lg-block">
-    <div class="main-header-right row m-0">
-        <div class="col-5" style="padding:0 30px">
-            <ul>
-                @if (!User.Identity?.IsAuthenticated == true || User.IsInRole("Client"))
-                {
-                    <li>
-                        <a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-lang="@currentLanguage">Home</a>
-                    </li>
-                    <li class="nav-item dropdown position-static">
-                        <a class="nav-link dropdown-toggle" asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage">Shop</a>
-                        <div class="dropdown-menu w-100 mt-2 border-0 shadow p-4" style="min-width: 100vw;">
-                            <div class="container-fluid">
-                                <div class="row">
-                                    <!-- NEW FOR WOMEN -->
-                                    <div class="col-md-3">
-                                        <h6 class="dropdown-header border-bottom pb-2 mb-2">NEW FOR WOMEN</h6>
-                                        <ul class="list-unstyled d-flex flex-column">
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ALBA", lang = currentLanguage })">ALBA</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "JULIET", lang = currentLanguage })">JULIET</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ARTSY", lang = currentLanguage })">ARTSY</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "CLEOPATRA", lang = currentLanguage })">CLEOPATRA</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })">LANA</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "PRIAM", lang = currentLanguage })">PRIAM</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })">RUBIK</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ZOE", lang = currentLanguage })">ZOE</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })">LURA</a></li>
-                                        </ul>
-                                    </div>
+	<div class="main-header-right row m-0">
+		<div class="col-5" style="padding:0 30px">
+			<ul>
+				@if (!User.Identity?.IsAuthenticated == true || User.IsInRole("Client"))
+				{
+					<li>
+						<a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-lang="@currentLanguage">@sharedRes.CheckKey("Home")</a>
+					</li>
+					<li class="nav-item dropdown position-static">
+						<a class="nav-link dropdown-toggle" asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage">@sharedRes.CheckKey("Shop")</a>
+						<div class="dropdown-menu w-100 mt-2 border-0 shadow p-4" style="min-width: 100vw;">
+							<div class="container-fluid">
+								<div class="row">
+									<!-- NEW FOR WOMEN -->
+									<div class="col-md-3">
+										<h6 class="dropdown-header border-bottom pb-2 mb-2">NEW FOR WOMEN</h6>
+										<ul class="list-unstyled d-flex flex-column">
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ALBA", lang = currentLanguage })">ALBA</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "JULIET", lang = currentLanguage })">JULIET</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ARTSY", lang = currentLanguage })">ARTSY</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "CLEOPATRA", lang = currentLanguage })">CLEOPATRA</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })">LANA</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "PRIAM", lang = currentLanguage })">PRIAM</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })">RUBIK</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ZOE", lang = currentLanguage })">ZOE</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })">LURA</a></li>
+										</ul>
+									</div>
 
-                                    <!-- SANDALS -->
-                                    <div class="col-md-3">
-                                        <h6 class="dropdown-header border-bottom pb-2 mb-2" style="border-color: #d1e4e3;">SANDALS</h6>
-                                        <ul class="list-unstyled d-flex flex-column">
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })">LANA</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })">LURA</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "MAVERICK", lang = currentLanguage })">MAVERICK</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "NOMAD", lang = currentLanguage })">NOMAD</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "PRIAM", lang = currentLanguage })">PRIAM</a></li>
-                                        </ul>
-                                    </div>
+									<!-- SANDALS -->
+									<div class="col-md-3">
+										<h6 class="dropdown-header border-bottom pb-2 mb-2" style="border-color: #d1e4e3;">SANDALS</h6>
+										<ul class="list-unstyled d-flex flex-column">
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })">LANA</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })">LURA</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "MAVERICK", lang = currentLanguage })">MAVERICK</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "NOMAD", lang = currentLanguage })">NOMAD</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "PRIAM", lang = currentLanguage })">PRIAM</a></li>
+										</ul>
+									</div>
 
-                                    <!-- IN SALE -->
-                                    <div class="col-md-3">
-                                        <h6 class="dropdown-header border-bottom pb-2 mb-2" style="border-color: #d1e4e3;">IN SALE</h6>
-                                        <ul class="list-unstyled d-flex flex-column">
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ROMEO", lang = currentLanguage })">ROMEO</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })">RUBIK</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ZOE", lang = currentLanguage })">ZOE</a></li>
-                                        </ul>
-                                    </div>
+									<!-- IN SALE -->
+									<div class="col-md-3">
+										<h6 class="dropdown-header border-bottom pb-2 mb-2" style="border-color: #d1e4e3;">IN SALE</h6>
+										<ul class="list-unstyled d-flex flex-column">
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ROMEO", lang = currentLanguage })">ROMEO</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })">RUBIK</a></li>
+											<li><a class="dropdown-item" href="@Url.Action("Index", "Product", new { category = "ZOE", lang = currentLanguage })">ZOE</a></li>
+										</ul>
+									</div>
 
-                                    <!-- IMAGE -->
-                                    <div class="col-md-3 text-end h-100">
-                                        <img src="/Catalogs/Images/Nallan Catalog 2022.png" alt="Catalog"
-                                             class="img-fluid rounded shadow-sm" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+									<!-- IMAGE -->
+									<div class="col-md-3 text-end h-100">
+										<img src="/Catalogs/Images/Nallan Catalog 2022.png" alt="Catalog"
+											 class="img-fluid rounded shadow-sm" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
 
-                    <li class="dropdown">
-                        <a class="nav-link" asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage">Catalog</a>
-                    </li>
-                    @if (User.IsInRole("Client"))
-                    {
-                        <li>
-                            <a class="nav-link" asp-controller="Order" asp-action="Index" asp-route-lang=@currentLanguage>Orders</a>
-                        </li>
-                    }
-                }
-                <li>
-                    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Administrator"))
-                    {
-                        <div class="toggle-sidebar"><i class="status_toggle middle" data-feather="align-center" id="sidebar-toggle"></i></div>
-                    }
-                </li>
-            </ul>
-        </div>
-        <div class="main-header-left col-2" style="width:16.66667% !important">
-            <div class="logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
-            <div class="dark-logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
-        </div>
-        <div class="nav-right col-5 pull-right right-menu p-0">
-            <ul class="nav-menus">
-                <li class="onhover-dropdown">
-                    <div class="bookmark-dropdown onhover-show-div">
-                        <ul class="m-t-5">
-                            <li class="add-to-bookmark">
-                                <a class="dropdown-item menubackgroundcolor" href="@Url.Action(null, null, new { lang = "en" })">
-                                    <i class="flag-icon flag-icon-us me-2"></i> English
-                                </a>
-                            </li>
-                            <li class="add-to-bookmark">
-                                <a class="dropdown-item menubackgroundcolor" href="@Url.Action(null, null, new { lang = "sq" })">
-                                    <i class="flag-icon flag-icon-al me-2"></i> Shqip
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
-                        <i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-us" : "flag-icon-al")"></i>
-                    </a>
-                </li>
+					<li class="dropdown">
+						<a class="nav-link" asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage">@sharedRes.CheckKey("Catalog")</a>
+					</li>
+					@if (User.IsInRole("Client"))
+					{
+						<li>
+							<a class="nav-link" asp-controller="Order" asp-action="Index" asp-route-lang=@currentLanguage>@sharedRes.CheckKey("Orders")</a>
+						</li>
+					}
+				}
+				<li>
+					@if (User.Identity?.IsAuthenticated == true && User.IsInRole("Administrator"))
+					{
+						<div class="toggle-sidebar"><i class="status_toggle middle" data-feather="align-center" id="sidebar-toggle"></i></div>
+					}
+				</li>
+			</ul>
+		</div>
+		<div class="main-header-left col-2" style="width:16.66667% !important">
+			<div class="logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
+			<div class="dark-logo-wrapper"><a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage><img class="img-fluid" src="~/img/logo.webp" alt=""></a></div>
+		</div>
+		<div class="nav-right col-5 pull-right right-menu p-0">
+			<ul class="nav-menus">
+				<li class="onhover-dropdown">
+					<div class="bookmark-dropdown onhover-show-div">
+						<ul class="m-t-5">
+							<li class="add-to-bookmark">
+								<a class="dropdown-item menubackgroundcolor" href="@Url.Action(null, null, new { lang = "en" })">
+									<i class="flag-icon flag-icon-us me-2"></i> English
+								</a>
+							</li>
+							<li class="add-to-bookmark">
+								<a class="dropdown-item menubackgroundcolor" href="@Url.Action(null, null, new { lang = "sq" })">
+									<i class="flag-icon flag-icon-al me-2"></i> Shqip
+								</a>
+							</li>
+						</ul>
+					</div>
+					<!-- FIXED: Show current language flag, not opposite -->
+					<a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
+						<i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-al" : "flag-icon-us")"></i>
+					</a>
+				</li>
 
-                <li class="onhover-dropdown">
-                    <div class="bookmark-box"><i data-feather="search"></i></div>
-                    <div class="bookmark-dropdown onhover-show-div">
-                        <div class="form-group mb-0">
-                            <form class="form" method="get" action="@Url.Action("Index", "Product")">
-                                <div class="input-group">
-                                    <input class="form-control" name="name" placeholder="Emri produktit" />
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </li>
-                <li class="onhover-dropdown">
-                    <div class="bookmark-box"><i data-feather="user"></i></div>
-                    <div class="bookmark-dropdown onhover-show-div">
-                        <ul class="m-t-5">
-                            <partial name="_LoginPartial" />
-                        </ul>
-                    </div>
-                </li>
+				<li class="onhover-dropdown">
+					<div class="bookmark-box"><i data-feather="search"></i></div>
+					<div class="bookmark-dropdown onhover-show-div">
+						<div class="form-group mb-0">
+							<form class="form" method="get" action="@Url.Action("Index", "Product")">
+								<div class="input-group">
+									<input class="form-control" name="name" placeholder="@sharedRes.CheckKey("SearchProducts")" />
+								</div>
+							</form>
+						</div>
+					</div>
+				</li>
+				<li class="onhover-dropdown">
+					<div class="bookmark-box"><i data-feather="user"></i></div>
+					<div class="bookmark-dropdown onhover-show-div">
+						<ul class="m-t-5">
+							<partial name="_LoginPartial" />
+						</ul>
+					</div>
+				</li>
 
-                <li class="add-to-bookmark cart-link">
-                    <i class="bookmark-icon" data-feather="shopping-cart"></i>
-                    <span id="cartCountBadge" class="pull-right" style="margin-left: 6px;">0</span>
-                </li>
-            </ul>
-        </div>
-        <div class="d-lg-none mobile-toggle pull-right w-auto"><i data-feather="more-horizontal"></i></div>
-    </div>
+				<li class="add-to-bookmark cart-link">
+					<i class="bookmark-icon" data-feather="shopping-cart"></i>
+					<span id="cartCountBadge" class="pull-right" style="margin-left: 6px;">0</span>
+				</li>
+			</ul>
+		</div>
+		<div class="d-lg-none mobile-toggle pull-right w-auto"><i data-feather="more-horizontal"></i></div>
+	</div>
 </div>
 
 <!-- Your Original Mobile/Tablet Header (unchanged) -->
 <div class="d-block d-lg-none bg-white py-2">
-    <div class="container-fluid">
-        <!-- Top Row: Logo, Cart, and User Icon -->
-        <div class="row align-items-center headerMobileDiv">
-            <!-- Logo on the Left -->
-            <div class="col-6">
-                <a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage>
-                    <img src="~/img/logo.webp" class="img-fluid" alt="Logo" style="max-width: 180px;">
-                </a>
-            </div>
+	<div class="container-fluid">
+		<!-- Top Row: Logo, Cart, and User Icon -->
+		<div class="row align-items-center headerMobileDiv">
+			<!-- Logo on the Left -->
+			<div class="col-6">
+				<a asp-controller="Home" asp-action="Index" asp-route-lang=@currentLanguage>
+					<img src="~/img/logo.webp" class="img-fluid" alt="Logo" style="max-width: 180px;">
+				</a>
+			</div>
 
-            <!-- Cart and User Icons on the Right -->
-            <div class="col-6 d-flex justify-content-end align-items-center">
-                <!-- Menu Icon (Hamburger) -->
-                <a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
-                    <i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-us" : "flag-icon-al")"></i>
-                </a>
+			<!-- Cart and User Icons on the Right -->
+			<div class="col-6 d-flex justify-content-end align-items-center">
+				<!-- FIXED: Show current language flag, not opposite -->
+				<a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
+					<i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-al" : "flag-icon-us")"></i>
+				</a>
 
-                <!-- Shopping Cart Icon -->
-                <div>
-                    <li class="add-to-bookmark cart-link">
-                        <i class="bookmark-icon" data-feather="shopping-cart"></i>
-                        <span id="cartCountBadgeMobile" class="pull-right" style="margin-left: 6px;">0</span>
-                    </li>
-                </div>
-            </div>
-        </div>
+				<!-- Shopping Cart Icon -->
+				<div>
+					<li class="add-to-bookmark cart-link">
+						<i class="bookmark-icon" data-feather="shopping-cart"></i>
+						<span id="cartCountBadgeMobile" class="pull-right" style="margin-left: 6px;">0</span>
+					</li>
+				</div>
+			</div>
+		</div>
 
-        <!-- Bottom Row: Full-Width Search Input -->
-        <div class="row mb-2" style="margin-top:75px">
-            <div class="col-12">
-                <form class="form" method="get" action="@Url.Action("Index", "Product")">
-                    <div class="input-group">
-                        <input class="form-control" name="name" placeholder="Emri produktit" />
-                        <button class="btn" type="submit">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+		<!-- Bottom Row: Full-Width Search Input -->
+		<div class="row mb-2" style="margin-top:75px">
+			<div class="col-12">
+				<form class="form" method="get" action="@Url.Action("Index", "Product")">
+					<div class="input-group">
+						<input class="form-control" name="name" placeholder="@sharedRes.CheckKey("SearchProducts")" />
+						<button class="btn" type="submit">
+							<i class="fa fa-search"></i>
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
 
-        <div class="row mt-2">
-            <div class="col-12  d-flex justify-content-between">
-                <ul id="list-unstyled" style="display:inline-flex">
-                    <li>
-                        <a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-lang="@currentLanguage">Home</a>
-                    </li>
-                    <li class="nav-item dropdown position-static">
-                        <a class="nav-link dropdown-toggle" asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Shop
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link" asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage">Catalog</a>
-                    </li>
+		<div class="row mt-2">
+			<div class="col-12  d-flex justify-content-between">
+				<ul id="list-unstyled" style="display:inline-flex">
+					<li>
+						<a class="nav-link" asp-controller="Home" asp-action="Index" asp-route-lang="@currentLanguage">@sharedRes.CheckKey("Home")</a>
+					</li>
+					<li class="nav-item dropdown position-static">
+						<a class="nav-link dropdown-toggle" asp-controller="Product" asp-action="Index" asp-route-lang="@currentLanguage" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							@sharedRes.CheckKey("Shop")
+						</a>
+					</li>
+					<li>
+						<a class="nav-link" asp-controller="Catalog" asp-action="Index" asp-route-lang="@currentLanguage">@sharedRes.CheckKey("Catalog")</a>
+					</li>
 
-                    @if (User.IsInRole("Client"))
-                    {
-                        <li>
-                            <a class="nav-link" asp-controller="Order" asp-action="Index" asp-route-lang="@currentLanguage">Orders</a>
-                        </li>
-                    }
-                </ul>
+					@if (User.IsInRole("Client"))
+					{
+						<li>
+							<a class="nav-link" asp-controller="Order" asp-action="Index" asp-route-lang="@currentLanguage">@sharedRes.CheckKey("Orders")</a>
+						</li>
+					}
+				</ul>
 
-                <ul id="list-unstyled2" style="display:inline-flex; float:right">
-                    @if (User?.Identity != null && SignInManager.IsSignedIn(User))
-                    {
-                        <li class="add-to-bookmark">
-                            <a id="manage" class="nav-link btn btn-outline-info text-dark" href="@Url.Action("Profile", "Administration", new { lang = currentLanguage })" title="Manage">
-                                My Account
-                                <span class="pull-right"></span>
-                            </a>
-                        </li>
+				<ul id="list-unstyled2" style="display:inline-flex; float:right">
+					@if (User?.Identity != null && SignInManager.IsSignedIn(User))
+					{
+						<li class="add-to-bookmark">
+							<a id="manage" class="nav-link btn btn-outline-info text-dark" href="@Url.Action("Profile", "Administration", new { lang = currentLanguage })" title="Manage">
+								@sharedRes.CheckKey("MyAccount")
+								<span class="pull-right"></span>
+							</a>
+						</li>
 
-                        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Account/Login">
-                            <button id="logout" type="submit" class="nav-link btn btn-outline-secondary menuitem menubackgroundcolor" style="color:black">
-                                Logout
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <li class="add-to-bookmark"><a id="login" class="nav-link btn-dark" asp-area="Identity" asp-page="/Account/Login">Login<span class="pull-right"></span></a> </li>
-                        <li class="add-to-bookmark"><a id="login" class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register<span class="pull-right"></span></a> </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </div>
+						<form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Account/Login">
+							<button id="logout" type="submit" class="nav-link btn btn-outline-secondary menuitem menubackgroundcolor" style="color:black">
+								@sharedRes.CheckKey("Logout")
+							</button>
+						</form>
+					}
+					else
+					{
+						<li class="add-to-bookmark"><a id="login" class="nav-link btn-dark" asp-area="Identity" asp-page="/Account/Login">@sharedRes.CheckKey("Login")<span class="pull-right"></span></a> </li>
+						<li class="add-to-bookmark"><a id="login" class="nav-link" asp-area="Identity" asp-page="/Account/Register">@sharedRes.CheckKey("Register")<span class="pull-right"></span></a> </li>
+					}
+				</ul>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- NEW Mobile Header with Static Search (only shows on mobile) -->
 <header class="nallan-mobile-header">
-    <div class="nallan-mobile-header-container">
-        <!-- Top row with hamburger, logo, and icons -->
-        <div class="nallan-mobile-header-top">
-            <!-- Left - Menu Toggle -->
-            <button class="nallan-mobile-menu-toggle" id="nallanMobileMenuToggle">
-                <i data-feather="menu"></i>
-            </button>
+	<div class="nallan-mobile-header-container">
+		<!-- Top row with hamburger, logo, and icons -->
+		<div class="nallan-mobile-header-top">
+			<!-- Left - Menu Toggle -->
+			<button class="nallan-mobile-menu-toggle" id="nallanMobileMenuToggle">
+				<i data-feather="menu"></i>
+			</button>
 
-            <!-- Center - Logo -->
-            <a href="@Url.Action("Index", "Home", new { lang = currentLanguage })" class="nallan-mobile-logo">
-                <img src="~/img/logo.webp" alt="Nallan" />
-            </a>
+			<!-- Center - Logo -->
+			<a href="@Url.Action("Index", "Home", new { lang = currentLanguage })" class="nallan-mobile-logo">
+				<img src="~/img/logo.webp" alt="Nallan" />
+			</a>
 
-            <!-- Right - Icons (Search icon removed) -->
-            <div class="nallan-mobile-header-icons">
-                <!-- Language Toggle -->
-                <div style="position: relative;">
-                    <a class="nallan-mobile-icon-btn nallan-mobile-lang-btn" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
-                        <i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-us" : "flag-icon-al")"></i>
-                    </a>
-                </div>
+			<!-- Right - Icons -->
+			<div class="nallan-mobile-header-icons">
+				<!-- Language Toggle - FIXED: Show current language flag -->
+				<div style="position: relative;">
+					<a class="nallan-mobile-icon-btn nallan-mobile-lang-btn" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
+						<i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-al" : "flag-icon-us")"></i>
+					</a>
+				</div>
 
-                <!-- User Account -->
-                <div style="position: relative;">
-                    <button class="nallan-mobile-icon-btn" id="nallanMobileUserBtn">
-                        <i data-feather="user"></i>
-                    </button>
-                    <div class="nallan-mobile-user-dropdown" id="nallanMobileUserDropdown">
-                        @if (User?.Identity != null && SignInManager.IsSignedIn(User))
-                        {
-                            <a href="@Url.Action("Profile", "Administration", new { lang = currentLanguage })">My Account</a>
-                            @if (User.IsInRole("Client"))
-                            {
-                                <a href="@Url.Action("Index", "Order", new { lang = currentLanguage })">Orders</a>
-                            }
-                            <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Account/Login" style="margin: 0;">
-                                <button type="submit">Logout</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <a asp-area="Identity" asp-page="/Account/Login">Login</a>
-                            <a asp-area="Identity" asp-page="/Account/Register">Register</a>
-                        }
-                    </div>
-                </div>
+				<!-- User Account -->
+				<div style="position: relative;">
+					<button class="nallan-mobile-icon-btn" id="nallanMobileUserBtn">
+						<i data-feather="user"></i>
+					</button>
+					<div class="nallan-mobile-user-dropdown" id="nallanMobileUserDropdown">
+						@if (User?.Identity != null && SignInManager.IsSignedIn(User))
+						{
+							<a href="@Url.Action("Profile", "Administration", new { lang = currentLanguage })">@sharedRes.CheckKey("MyAccount")</a>
+							@if (User.IsInRole("Client"))
+							{
+								<a href="@Url.Action("Index", "Order", new { lang = currentLanguage })">@sharedRes.CheckKey("Orders")</a>
+							}
+							<form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Account/Login" style="margin: 0;">
+								<button type="submit">@sharedRes.CheckKey("Logout")</button>
+							</form>
+						}
+						else
+						{
+							<a asp-area="Identity" asp-page="/Account/Login">@sharedRes.CheckKey("Login")</a>
+							<a asp-area="Identity" asp-page="/Account/Register">@sharedRes.CheckKey("Register")</a>
+						}
+					</div>
+				</div>
 
-                <!-- Shopping Cart -->
-                <a href="@Url.Action("Index", "Cart", new { lang = currentLanguage })" class="nallan-mobile-icon-btn">
-                    <i data-feather="shopping-cart"></i>
-                    <span class="nallan-mobile-cart-badge" id="nallanMobileCartBadge" style="display: none;">0</span>
-                </a>
-            </div>
-        </div>
+				<!-- Shopping Cart -->
+				<a href="@Url.Action("Index", "Cart", new { lang = currentLanguage })" class="nallan-mobile-icon-btn">
+					<i data-feather="shopping-cart"></i>
+					<span class="nallan-mobile-cart-badge" id="nallanMobileCartBadge" style="display: none;">0</span>
+				</a>
+			</div>
+		</div>
 
-        <!-- Bottom row with static search -->
-        <div class="nallan-mobile-header-bottom">
-            <div class="nallan-mobile-search-bar">
-                <form class="nallan-mobile-search-form" method="get" action="@Url.Action("Index", "Product")">
-                    <input name="name" placeholder="@(sharedRes.ContainsKey("SearchProducts") ? sharedRes["SearchProducts"] : "Emri produktit")" />
-                    <button type="submit">
-                        <i data-feather="search"></i>
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
+		<!-- Bottom row with static search -->
+		<div class="nallan-mobile-header-bottom">
+			<div class="nallan-mobile-search-bar">
+				<form class="nallan-mobile-search-form" method="get" action="@Url.Action("Index", "Product")">
+					<input name="name" placeholder="@sharedRes.CheckKey("SearchProducts")" />
+					<button type="submit">
+						<i data-feather="search"></i>
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
 </header>
 
 <!-- Mobile Menu Overlay -->
@@ -763,217 +753,218 @@
 
 <!-- Mobile Side Menu -->
 <div class="nallan-mobile-side-menu" id="nallanMobileSideMenu">
-    <div class="nallan-mobile-menu-content">
-        <button class="nallan-mobile-menu-close" id="nallanMobileMenuClose">
-            <i data-feather="x"></i>
-        </button>
+	<div class="nallan-mobile-menu-content">
+		<button class="nallan-mobile-menu-close" id="nallanMobileMenuClose">
+			<i data-feather="x"></i>
+		</button>
 
-        <div class="nallan-mobile-menu-section">
-            <div class="nallan-mobile-menu-title">@(sharedRes.ContainsKey("Shop") ? sharedRes["Shop"] : "SHOP")</div>
+		<div class="nallan-mobile-menu-section">
+			<div class="nallan-mobile-menu-title">@sharedRes.CheckKey("Shop")</div>
 
-            <!-- NEW FOR WOMEN -->
-            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('newWomen')">NEW FOR WOMEN</div>
-            <div class="nallan-mobile-submenu" id="mobile-newWomen">
-                <a href="@Url.Action("Index", "Product", new { category = "ALBA", lang = currentLanguage })" class="nallan-mobile-menu-item">ALBA</a>
-                <a href="@Url.Action("Index", "Product", new { category = "JULIET", lang = currentLanguage })" class="nallan-mobile-menu-item">JULIET</a>
-                <a href="@Url.Action("Index", "Product", new { category = "ARTSY", lang = currentLanguage })" class="nallan-mobile-menu-item">ARTSY</a>
-                <a href="@Url.Action("Index", "Product", new { category = "CLEOPATRA", lang = currentLanguage })" class="nallan-mobile-menu-item">CLEOPATRA</a>
-                <a href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })" class="nallan-mobile-menu-item">LANA</a>
-                <a href="@Url.Action("Index", "Product", new { category = "PRIAM", lang = currentLanguage })" class="nallan-mobile-menu-item">PRIAM</a>
-                <a href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })" class="nallan-mobile-menu-item">RUBIK</a>
-                <a href="@Url.Action("Index", "Product", new { category = "ZOE", lang = currentLanguage })" class="nallan-mobile-menu-item">ZOE</a>
-                <a href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })" class="nallan-mobile-menu-item">LURA</a>
-            </div>
+			<!-- NEW FOR WOMEN -->
+			<div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('newWomen')">NEW FOR WOMEN</div>
+			<div class="nallan-mobile-submenu" id="mobile-newWomen">
+				<a href="@Url.Action("Index", "Product", new { category = "ALBA", lang = currentLanguage })" class="nallan-mobile-menu-item">ALBA</a>
+				<a href="@Url.Action("Index", "Product", new { category = "JULIET", lang = currentLanguage })" class="nallan-mobile-menu-item">JULIET</a>
+				<a href="@Url.Action("Index", "Product", new { category = "ARTSY", lang = currentLanguage })" class="nallan-mobile-menu-item">ARTSY</a>
+				<a href="@Url.Action("Index", "Product", new { category = "CLEOPATRA", lang = currentLanguage })" class="nallan-mobile-menu-item">CLEOPATRA</a>
+				<a href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })" class="nallan-mobile-menu-item">LANA</a>
+				<a href="@Url.Action("Index", "Product", new { category = "PRIAM", lang = currentLanguage })" class="nallan-mobile-menu-item">PRIAM</a>
+				<a href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })" class="nallan-mobile-menu-item">RUBIK</a>
+				<a href="@Url.Action("Index", "Product", new { category = "ZOE", lang = currentLanguage })" class="nallan-mobile-menu-item">ZOE</a>
+				<a href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })" class="nallan-mobile-menu-item">LURA</a>
+			</div>
 
-            <!-- SANDALS -->
-            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('sandals')">SANDALS</div>
-            <div class="nallan-mobile-submenu" id="mobile-sandals">
-                <a href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })" class="nallan-mobile-menu-item">LANA</a>
-                <a href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })" class="nallan-mobile-menu-item">LURA</a>
-                <a href="@Url.Action("Index", "Product", new { category = "MAVERICK", lang = currentLanguage })" class="nallan-mobile-menu-item">MAVERICK</a>
-                <a href="@Url.Action("Index", "Product", new { category = "NOMAD", lang = currentLanguage })" class="nallan-mobile-menu-item">NOMAD</a>
-                <a href="@Url.Action("Index", "Product", new { category = "PRIAM", lang = currentLanguage })" class="nallan-mobile-menu-item">PRIAM</a>
-            </div>
+			<!-- SANDALS -->
+			<div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('sandals')">SANDALS</div>
+			<div class="nallan-mobile-submenu" id="mobile-sandals">
+				<a href="@Url.Action("Index", "Product", new { category = "LANA", lang = currentLanguage })" class="nallan-mobile-menu-item">LANA</a>
+				<a href="@Url.Action("Index", "Product", new { category = "LURA", lang = currentLanguage })" class="nallan-mobile-menu-item">LURA</a>
+				<a href="@Url.Action("Index", "Product", new { category = "MAVERICK", lang = currentLanguage })" class="nallan-mobile-menu-item">MAVERICK</a>
+				<a href="@Url.Action("Index", "Product", new { category = "NOMAD", lang = currentLanguage })" class="nallan-mobile-menu-item">NOMAD</a>
+				<a href="@Url.Action("Index", "Product", new { category = "PRIAM", lang = currentLanguage })" class="nallan-mobile-menu-item">PRIAM</a>
+			</div>
 
-            <!-- IN SALE -->
-            <div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('sale')">IN SALE</div>
-            <div class="nallan-mobile-submenu" id="mobile-sale">
-                <a href="@Url.Action("Index", "Product", new { category = "ROMEO", lang = currentLanguage })" class="nallan-mobile-menu-item">ROMEO</a>
-                <a href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })" class="nallan-mobile-menu-item">RUBIK</a>
-                <a href="@Url.Action("Index", "Product", new { category = "ZOE", lang = currentLanguage })" class="nallan-mobile-menu-item">ZOE</a>
-            </div>
-        </div>
+			<!-- IN SALE -->
+			<div class="nallan-mobile-menu-item expandable" onclick="toggleMobileSubmenu('sale')">IN SALE</div>
+			<div class="nallan-mobile-submenu" id="mobile-sale">
+				<a href="@Url.Action("Index", "Product", new { category = "ROMEO", lang = currentLanguage })" class="nallan-mobile-menu-item">ROMEO</a>
+				<a href="@Url.Action("Index", "Product", new { category = "RUBIK", lang = currentLanguage })" class="nallan-mobile-menu-item">RUBIK</a>
+				<a href="@Url.Action("Index", "Product", new { category = "ZOE", lang = currentLanguage })" class="nallan-mobile-menu-item">ZOE</a>
+			</div>
+		</div>
 
-        <div class="nallan-mobile-menu-section">
-            <div class="nallan-mobile-menu-title">@(sharedRes.ContainsKey("Pages") ? sharedRes["Pages"] : "PAGES")</div>
-            <a href="@Url.Action("Index", "Home", new { lang = currentLanguage })" class="nallan-mobile-menu-item">Home</a>
-            <a href="@Url.Action("Index", "Catalog", new { lang = currentLanguage })" class="nallan-mobile-menu-item">Catalog</a>
-        </div>
+		<div class="nallan-mobile-menu-section">
+			<div class="nallan-mobile-menu-title">@sharedRes.CheckKey("Pages")</div>
+			<a href="@Url.Action("Index", "Home", new { lang = currentLanguage })" class="nallan-mobile-menu-item">@sharedRes.CheckKey("Home")</a>
+			<a href="@Url.Action("Index", "Catalog", new { lang = currentLanguage })" class="nallan-mobile-menu-item">@sharedRes.CheckKey("Catalog")</a>
+		</div>
 
-        @if (User.IsInRole("Administrator"))
-        {
-            <div class="nallan-mobile-menu-section">
-                <div class="nallan-mobile-menu-title">ADMIN</div>
-                <a href="#" class="nallan-mobile-menu-item" onclick="document.getElementById('sidebar-toggle').click(); closeMobileMenu();">Dashboard</a>
-            </div>
-        }
-    </div>
+		@if (User.IsInRole("Administrator"))
+		{
+			<div class="nallan-mobile-menu-section">
+				<div class="nallan-mobile-menu-title">ADMIN</div>
+				<a href="#" class="nallan-mobile-menu-item" onclick="document.getElementById('sidebar-toggle').click(); closeMobileMenu();">@sharedRes.CheckKey("Dashboard")</a>
+			</div>
+		}
+	</div>
 </div>
 
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Feather icons
-        if (typeof feather !== 'undefined') {
-            feather.replace();
-        }
+	document.addEventListener('DOMContentLoaded', function() {
+		// Initialize Feather icons
+		if (typeof feather !== 'undefined') {
+			feather.replace();
+		}
 
-        // Mobile Menu functionality
-        const mobileMenuToggle = document.getElementById('nallanMobileMenuToggle');
-        const mobileMenuClose = document.getElementById('nallanMobileMenuClose');
-        const mobileMenuOverlay = document.getElementById('nallanMobileMenuOverlay');
-        const mobileSideMenu = document.getElementById('nallanMobileSideMenu');
-        const mobileUserBtn = document.getElementById('nallanMobileUserBtn');
-        const mobileUserDropdown = document.getElementById('nallanMobileUserDropdown');
+		// Mobile Menu functionality
+		const mobileMenuToggle = document.getElementById('nallanMobileMenuToggle');
+		const mobileMenuClose = document.getElementById('nallanMobileMenuClose');
+		const mobileMenuOverlay = document.getElementById('nallanMobileMenuOverlay');
+		const mobileSideMenu = document.getElementById('nallanMobileSideMenu');
+		const mobileUserBtn = document.getElementById('nallanMobileUserBtn');
+		const mobileUserDropdown = document.getElementById('nallanMobileUserDropdown');
 
-        function openMobileMenu() {
-            if (mobileMenuOverlay && mobileSideMenu) {
-                mobileMenuOverlay.classList.add('active');
-                mobileSideMenu.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
+		function openMobileMenu() {
+			if (mobileMenuOverlay && mobileSideMenu) {
+				mobileMenuOverlay.classList.add('active');
+				mobileSideMenu.classList.add('active');
+				document.body.style.overflow = 'hidden';
+			}
+		}
 
-        function closeMobileMenu() {
-            if (mobileMenuOverlay && mobileSideMenu) {
-                mobileMenuOverlay.classList.remove('active');
-                mobileSideMenu.classList.remove('active');
-                document.body.style.overflow = '';
-                // Hide all mobile submenus
-                document.querySelectorAll('.nallan-mobile-submenu').forEach(submenu => {
-                    submenu.classList.remove('active');
-                });
-            }
-        }
+		function closeMobileMenu() {
+			if (mobileMenuOverlay && mobileSideMenu) {
+				mobileMenuOverlay.classList.remove('active');
+				mobileSideMenu.classList.remove('active');
+				document.body.style.overflow = '';
+				// Hide all mobile submenus
+				document.querySelectorAll('.nallan-mobile-submenu').forEach(submenu => {
+					submenu.classList.remove('active');
+				});
+			}
+		}
 
-        // Make closeMobileMenu globally available
-        window.closeMobileMenu = closeMobileMenu;
+		// Make closeMobileMenu globally available
+		window.closeMobileMenu = closeMobileMenu;
 
-        if (mobileMenuToggle) mobileMenuToggle.addEventListener('click', openMobileMenu);
-        if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMobileMenu);
-        if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+		if (mobileMenuToggle) mobileMenuToggle.addEventListener('click', openMobileMenu);
+		if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMobileMenu);
+		if (mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMobileMenu);
 
-        // Mobile User dropdown
-        if (mobileUserBtn && mobileUserDropdown) {
-            mobileUserBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                mobileUserDropdown.classList.toggle('active');
-            });
-        }
+		// Mobile User dropdown
+		if (mobileUserBtn && mobileUserDropdown) {
+			mobileUserBtn.addEventListener('click', function(e) {
+				e.stopPropagation();
+				mobileUserDropdown.classList.toggle('active');
+			});
+		}
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function() {
-            if (mobileUserDropdown) mobileUserDropdown.classList.remove('active');
-        });
+		// Close dropdowns when clicking outside
+		document.addEventListener('click', function() {
+			if (mobileUserDropdown) mobileUserDropdown.classList.remove('active');
+		});
 
-        // Close menu on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeMobileMenu();
-                if (mobileUserDropdown) mobileUserDropdown.classList.remove('active');
-            }
-        });
+		// Close menu on escape key
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape') {
+				closeMobileMenu();
+				if (mobileUserDropdown) mobileUserDropdown.classList.remove('active');
+			}
+		});
 
-        // Cart count functionality (integrate with your existing cart system)
-        try {
-            refreshCartCountFromServer();
+		// Cart count functionality (integrate with your existing cart system)
+		try {
+			refreshCartCountFromServer();
 
-            const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-            if (addToCartButtons && addToCartButtons.length > 0) {
-                addToCartButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        setTimeout(refreshCartCountFromServer, 300);
-                    });
-                });
-            }
-        } catch (e) {
-            console.error("Error in cart functionality:", e);
-        }
-    });
+			const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+			if (addToCartButtons && addToCartButtons.length > 0) {
+				addToCartButtons.forEach(button => {
+					button.addEventListener('click', function () {
+						setTimeout(refreshCartCountFromServer, 300);
+					});
+				});
+			}
+		} catch (e) {
+			console.error("Error in cart functionality:", e);
+		}
+	});
 
-    // Mobile Submenu toggle function
-    function toggleMobileSubmenu(id) {
-        const submenu = document.getElementById('mobile-' + id);
-        if (submenu) {
-            const isActive = submenu.classList.contains('active');
+	// Mobile Submenu toggle function
+	function toggleMobileSubmenu(id) {
+		const submenu = document.getElementById('mobile-' + id);
+		if (submenu) {
+			const isActive = submenu.classList.contains('active');
 
-            // Hide all other submenus
-            document.querySelectorAll('.nallan-mobile-submenu').forEach(sub => {
-                sub.classList.remove('active');
-            });
+			// Hide all other submenus
+			document.querySelectorAll('.nallan-mobile-submenu').forEach(sub => {
+				sub.classList.remove('active');
+			});
 
-            // Toggle the clicked submenu
-            if (!isActive) {
-                submenu.classList.add('active');
-            }
-        }
-    }
+			// Toggle the clicked submenu
+			if (!isActive) {
+				submenu.classList.add('active');
+			}
+		}
+	}
 
-    // Cart functions (from your existing code)
-    function refreshCartCountFromServer() {
-        try {
-            fetch('/@currentLanguage/Cart/GetCartItemCount', {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data && typeof data === 'object') {
-                    const count = data.count !== undefined ? Number(data.count) : 0;
-                    updateCartCount(isNaN(count) ? 0 : count);
-                } else {
-                    console.warn('Invalid response format:', data);
-                    updateCartCount(0);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching cart count:', error);
-                updateCartCount(0);
-            });
-        } catch (e) {
-            console.error("Error in refreshCartCountFromServer:", e);
-        }
-    }
+	// Cart functions (from your existing code)
+	function refreshCartCountFromServer() {
+		try {
+			fetch('/@currentLanguage/Cart/GetCartItemCount', {
+				method: 'GET',
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(data => {
+				if (data && typeof data === 'object') {
+					const count = data.count !== undefined ? Number(data.count) : 0;
+					updateCartCount(isNaN(count) ? 0 : count);
+				} else {
+					console.warn('Invalid response format:', data);
+					updateCartCount(0);
+				}
+			})
+			.catch(error => {
+				console.error('Error fetching cart count:', error);
+				updateCartCount(0);
+			});
+		} catch (e) {
+			console.error("Error in refreshCartCountFromServer:", e);
+		}
+	}
 
-    function updateCartCount(newCount) {
-        try {
-            // Desktop cart badge
-            const desktopBadge = document.getElementById('cartCountBadge');
-            const mobileBadge = document.getElementById('cartCountBadgeMobile');
-            const newMobileBadge = document.getElementById('nallanMobileCartBadge');
+	function updateCartCount(newCount) {
+		try {
+			// Desktop cart badge
+			const desktopBadge = document.getElementById('cartCountBadge');
+			const mobileBadge = document.getElementById('cartCountBadgeMobile');
+			const newMobileBadge = document.getElementById('nallanMobileCartBadge');
 
-            if (desktopBadge) {
-                desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
-                desktopBadge.textContent = newCount;
-            }
-            if (mobileBadge) {
-                mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
-                mobileBadge.textContent = newCount;
-            }
-            if (newMobileBadge) {
-                newMobileBadge.style.display = newCount > 0 ? 'flex' : 'none';
-                newMobileBadge.textContent = newCount;
-            }
+			if (desktopBadge) {
+				desktopBadge.style.display = newCount > 0 ? 'inline' : 'none';
+				desktopBadge.textContent = newCount;
+			}
+			if (mobileBadge) {
+				mobileBadge.style.display = newCount > 0 ? 'inline' : 'none';
+				mobileBadge.textContent = newCount;
+			}
+			if (newMobileBadge) {
+				newMobileBadge.style.display = newCount > 0 ? 'flex' : 'none';
+				newMobileBadge.textContent = newCount;
+			}
 
-            console.log('Cart count updated to:', newCount);
-        } catch (e) {
-            console.error("Error in updateCartCount:", e);
-        }
-    }
+			console.log('Cart count updated to:', newCount);
+		} catch (e) {
+			console.error("Error in updateCartCount:", e);
+		}
+	}
 </script>

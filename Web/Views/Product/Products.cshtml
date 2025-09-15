@@ -3,6 +3,7 @@
     ViewData["Title"] = "Product List";
     var externalBase = "https://nallan.eu/products";
     var internalBase = "~/Products"; // Internal path in your application
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
 }
 <div class="page-body" style="margin-top:100px;">
     <!-- Container-fluid starts-->
@@ -13,9 +14,7 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header pb-0">
-                        <h3>Product list</h3>
-                        @* <a class="btn btn-primary mb-3" asp-controller="Product" asp-action="CreateProduct">Add New Product</a> *@
-
+                        <h3>@sharedRes.CheckKey("ProductList")</h3>
                     </div>
 
                     <div class="card-body">
@@ -24,18 +23,18 @@
                             <table class="display" id="basic-1">
                                 <thead>
                                     <tr>
-                                        <th>Image</th>
-                                        <th>Details</th>
-                                        <th>Code</th>
-                                        <th>Price</th>
-                                        <th>Old Price</th>
-                                        <th>ac</th>
+                                        <th>@sharedRes.CheckKey("ImageColumn")</th>
+                                        <th>@sharedRes.CheckKey("Details")</th>
+                                        <th>@sharedRes.CheckKey("Code")</th>
+                                        <th>@sharedRes.CheckKey("Price")</th>
+                                        <th>@sharedRes.CheckKey("OldPrice")</th>
+                                        <th>@sharedRes.CheckKey("Actions")</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if(Model?.Products?.Count() > 0)
+                                    @if (Model?.Products?.Count() > 0)
                                     {
-                                        foreach(var item in Model?.Products)
+                                        foreach (var item in Model?.Products)
                                         {
                                             <tr>
                                                 <td><a asp-controller="Product" asp-action="ProductDetail" asp-route-productid="@item.ProductCode"><img src="@Url.Content(@item?.ImageUrls?.FirstOrDefault().Replace(externalBase, internalBase))" alt=""></a></td>
@@ -51,19 +50,13 @@
                                                 <td>@item.OldPrice</td>
                                                 <td>
                                                     <a class="btn btn-primary" asp-controller="Product" asp-action="ProductDetail" asp-route-productid="@item.ProductCode">
-                                                        <i class="fa fa-shopping-cart"></i> Details
+                                                        <i class="fa fa-shopping-cart"></i> @sharedRes.CheckKey("Details")
                                                     </a>
                                                 </td>
-                                               
-                                        @*         <td>
-                                                    <button class="btn btn-danger btn-xs" type="button" data-original-title="btn btn-danger btn-xs" title="">Delete</button>
-                                                    <button class="btn btn-primary btn-xs" type="button" data-original-title="btn btn-danger btn-xs" title="">Edit</button>
-                                                </td> *@
                                             </tr>
-
                                         }
                                     }
-                                
+
                                 </tbody>
                             </table>
                         </div>

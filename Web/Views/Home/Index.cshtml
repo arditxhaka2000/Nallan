@@ -283,7 +283,7 @@
 <div class="row">
     <div class="col-xl-6 col-md-6 col-sm-12 d-flex align-items-stretch">
         <div class="card shadow p-3 w-100">
-            <h5 class="card-title text-center">Nallan Katallogu Summer.KS</h5>
+            <h5 class="card-title text-center">@sharedRes.CheckKey("SummerCatalog")</h5>
 
             <div class="text-center mb-3">
                 <img src="~/Catalogs/Images/Nallan Katallogu Summer.KS.png" alt="Catalog Cover"
@@ -293,7 +293,7 @@
 
             <div class="text-center mt-auto">
                 <a href="@Url.Action("Viewer", "Catalog", new { file = "Nallan Katallogu Summer.KS.pdf", name = "Summer Catalog" })" target="_blank">
-                    View Summer Catalog
+                    @sharedRes.CheckKey("ViewSummerCatalog")
                 </a>
             </div>
         </div>
@@ -301,7 +301,7 @@
 
     <div class="col-lg-6 col-md-6 d-flex align-items-stretch">
         <div class="card shadow p-3 w-100">
-            <h5 class="card-title text-center">NALLAN Katalogu Veror 2023-24</h5>
+            <h5 class="card-title text-center">@sharedRes.CheckKey("SummerCatalog") 2023-24</h5>
 
             <div class="text-center mb-3">
                 <img src="~/Catalogs/Images/NALLAN Katalogu Veror 2023-24.png" alt="Catalog Cover"
@@ -311,7 +311,7 @@
 
             <div class="text-center mt-auto">
                 <a href="@Url.Action("Viewer", "Catalog", new { file = "NALLAN Katalogu Veror 2023-24.pdf", name = "Summer Catalog" })" target="_blank">
-                    View Summer Catalog
+                    @sharedRes.CheckKey("ViewSummerCatalog")
                 </a>
             </div>
         </div>
@@ -342,7 +342,7 @@
                             <a asp-controller="Product" asp-action="Details" asp-route-productid="@product.ProductCode">
                                 @{
                                     var firstImage = product?.ImageUrls?.FirstOrDefault();
-                                    var secondImage = product?.ImageUrls?.Skip(1).FirstOrDefault(); // Get second image
+                                    var secondImage = product?.ImageUrls?.Skip(1).FirstOrDefault();
                                     var imageSrc = firstImage != null ? firstImage.Replace(externalBase, internalBase) : "~/no-image.png";
                                     var hoverImageSrc = secondImage != null ? secondImage.Replace(externalBase, internalBase) : imageSrc;
                                 }
@@ -431,7 +431,7 @@
                                                                            id="@inputId"
                                                                            value="@size"
                                                                            autocomplete="off"
-                                                                           @(hasStock ? "" : "disabled") />
+                                                                    @(hasStock ? "" : "disabled") />
 
                                                                     <label class="size-label @(hasStock ? "" : "disabled")" for="@inputId">
                                                                         @size

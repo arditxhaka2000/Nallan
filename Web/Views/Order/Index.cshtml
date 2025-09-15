@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Orders";
+    var sharedRes = (Dictionary<string, string>)ViewData["Shared"];
 }
 <div class="page-body" style="margin:0 !important">
     <div class="container-fluid">
@@ -16,19 +17,17 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header pb-0">
-                        <h5>Order history</h5>
+                        <h5>@sharedRes.CheckKey("OrderHistory")</h5>
                     </div>
                     <div class="card-body">
-                        @* <div class="order-history table-responsive"> *@
                         <div class="table-responsive">
-                            @* <table class="table table-bordernone display" id="basic-1"> *@
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Klienti</th>
-                                        <th scope="col">Data</th>
-                                        <th scope="col">Produkte</th>
-                                        <th scope="col">Cmimi Total</th>
+                                        <th scope="col">@sharedRes.CheckKey("Client")</th>
+                                        <th scope="col">@sharedRes.CheckKey("Date")</th>
+                                        <th scope="col">@sharedRes.CheckKey("Products")</th>
+                                        <th scope="col">@sharedRes.CheckKey("TotalPrice")</th>
                                         <th scope="col"><i class="fa fa-angle-down"></i></th>
                                     </tr>
                                 </thead>
@@ -50,7 +49,7 @@
                                                 <td>
                                                     @order.TotalPrice
                                                 </td>
-                                                <td><a class="btn btn-primary" asp-action="Order" asp-controller="Order" asp-route-OrderId="@order.OrderId">Detajet</a></td>
+                                                <td><a class="btn btn-primary" asp-action="Order" asp-controller="Order" asp-route-OrderId="@order.OrderId">@sharedRes.CheckKey("DetailsButton")</a></td>
                                             </tr>
                                         }
                                     }
