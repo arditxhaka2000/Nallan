@@ -548,7 +548,7 @@
 						</ul>
 					</div>
 					<!-- FIXED: Show current language flag, not opposite -->
-					<a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
+					<a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "sq" : "en" })">
 						<i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-al" : "flag-icon-us")"></i>
 					</a>
 				</li>
@@ -599,7 +599,7 @@
 			<!-- Cart and User Icons on the Right -->
 			<div class="col-6 d-flex justify-content-end align-items-center">
 				<!-- FIXED: Show current language flag, not opposite -->
-				<a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
+				<a class="nav-link d-flex align-items-center" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "sq" : "en" })">
 					<i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-al" : "flag-icon-us")"></i>
 				</a>
 
@@ -696,7 +696,7 @@
 			<div class="nallan-mobile-header-icons">
 				<!-- Language Toggle - FIXED: Show current language flag -->
 				<div style="position: relative;">
-					<a class="nallan-mobile-icon-btn nallan-mobile-lang-btn" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "en" : "sq" })">
+					<a class="nallan-mobile-icon-btn nallan-mobile-lang-btn" href="@Url.Action(null, null, new { lang = currentLanguage == "sq" ? "sq" : "en" })">
 						<i class="flag-icon @(currentLanguage == "sq" ? "flag-icon-al" : "flag-icon-us")"></i>
 					</a>
 				</div>
