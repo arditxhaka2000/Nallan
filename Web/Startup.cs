@@ -44,6 +44,7 @@ using Web.Components;
 using Services.TEBPayments;
 using Web.Models.Payments;
 using Web.Models.TebBank;
+using Services.JwtService;
 
 namespace OA_Web
 {
@@ -107,7 +108,9 @@ namespace OA_Web
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IUserRepository<>), typeof(UserRepository<>));
-
+            services.AddScoped<JwtService>();
+            services.AddScoped<IGjirafaPartnerService, GjirafaPartnerService>();
+            services.AddScoped<IGjirafaFeedService, GjirafaFeedService>();
             services.AddDependencies();
             services.AddSession();
 
