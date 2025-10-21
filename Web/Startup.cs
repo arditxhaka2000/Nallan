@@ -102,9 +102,8 @@ namespace OA_Web
             //    .AddEntityFrameworkStores<ApplicationContext>();
 
             services.AddIdentity<AppUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                       // services.AddDefaultIdentity<IdentityUser>()
-                       .AddEntityFrameworkStores<ApplicationContext>()
-                       .AddDefaultTokenProviders();
+                    .AddEntityFrameworkStores<ApplicationContext>()
+                    .AddDefaultTokenProviders();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IUserRepository<>), typeof(UserRepository<>));
@@ -112,6 +111,40 @@ namespace OA_Web
             services.AddScoped<IGjirafaPartnerService, GjirafaPartnerService>();
             services.AddScoped<IGjirafaFeedService, GjirafaFeedService>();
             services.AddDependencies();
+
+            // JWT Authentication for API
+            var jwtSettings = Configuration.GetSection("JwtConfig");
+            var secretKey = jwtSettings["secret"];
+            var key = Encoding.ASCII.GetBytes(secretKey);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "MultiAuth";
+                options.DefaultChallengeScheme = "MultiAuth";
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            })
+            .AddPolicyScheme("MultiAuth", "Identity or JWT", options =>
+            {
+                options.ForwardDefaultSelector = context =>
+                {
+                    string authHeader = context.Request.Headers["Authorization"].FirstOrDefault() ?? "";
+                    if (authHeader.StartsWith("Bearer "))
+                        return JwtBearerDefaults.AuthenticationScheme;
+
+                    return "Identity.Application";
+                };
+            });
             services.AddSession();
 
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
@@ -315,7 +348,7 @@ namespace OA_Web
             //});
             //cart
             app.UseSession(); // Use session
-
+            app.UseMiddleware<UnderConstructionMiddleware>();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -328,13 +361,14 @@ namespace OA_Web
             app.UseRequestLocalization(options.Value);
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapControllerRoute(
-                //    name: "costum",
-                //    pattern: "{lang:lang}/{controller=PollingCenter}/{action=ActualPollingCenter}"
-                //);
+                endpoints.MapControllers();  // API routes
 
-                //KJo e bon UnderConstruction faqen
-                app.UseMiddleware<UnderConstructionMiddleware>();
+                // Redirect / to /sq
+                endpoints.MapGet("/", context =>
+                {
+                    context.Response.Redirect("/sq");
+                    return Task.CompletedTask;
+                });
 
                 endpoints.MapControllerRoute(
                    name: "Default",
@@ -344,8 +378,10 @@ namespace OA_Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{*catchall}",
-                    defaults: new { controller = "Home", action = "RedirectToDefaultLanguage", lang = "sq" }
-                    );
+                    defaults: new { controller = "Home", action = "RedirectToDefaultLanguage", lang = "sq" },
+                    constraints: new { catchall = "^(?!api).*" }
+                );
+
                 endpoints.MapRazorPages();
             });
         }

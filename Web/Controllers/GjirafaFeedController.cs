@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 [ApiController]
 [Route("api/gjirafa")]
-[Authorize] // Requires valid JWT token
+[Produces("application/json")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public sealed class GjirafaFeedController : ControllerBase
 {
     private readonly IGjirafaFeedService _feedService;
@@ -15,11 +17,6 @@ public sealed class GjirafaFeedController : ControllerBase
         _feedService = feedService;
     }
 
-    /// <summary>
-    /// GET /api/gjirafa/products?page=1&pageSize=200&inStockOnly=true&flatten=true
-    /// Requires JWT token from /api/gjirafa/login
-    /// Authorization: Bearer {token}
-    /// </summary>
     [HttpGet("products")]
     public async Task<IActionResult> GetProducts(
         [FromQuery] int page = 1,
@@ -41,11 +38,6 @@ public sealed class GjirafaFeedController : ControllerBase
         return Ok(response.Items);
     }
 
-    /// <summary>
-    /// GET /api/gjirafa/products/{productCode}?flatten=true
-    /// Requires JWT token from /api/gjirafa/login
-    /// Authorization: Bearer {token}
-    /// </summary>
     [HttpGet("products/{productCode}")]
     public async Task<IActionResult> GetProductByCode(
         [FromRoute] string productCode,
