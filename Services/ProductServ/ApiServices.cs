@@ -201,86 +201,133 @@ ISNULL((
 
             return articles;
         }
+        private string NormalizeCode(string code)
+        {
+            // Remove all non-alphanumeric characters
+            code = Regex.Replace(code ?? "", @"[^A-Z0-9]", "").ToUpperInvariant();
+
+            // Common color normalization
+            code = code
+                .Replace("BLCK", "BLK")
+                .Replace("BLACK", "BLK")
+                .Replace("DKBL", "BLK")       // Dark Blue → Black family
+                .Replace("DARKBLU", "BLU")
+                .Replace("NAVY", "BLU")
+                .Replace("WHIT", "WHT")
+                .Replace("WHITE", "WHT")
+                .Replace("BGE", "BEG")
+                .Replace("BG", "BEG")
+                .Replace("BRN", "BRWN")
+                .Replace("GRY", "GREY")
+                .Replace("RED", "RD")
+                .Replace("PINK", "PNK")
+                .Replace("YELL", "YLW")
+                .Replace("BEIGE", "BEG");
+
+            // Remove leading zeros inside numeric segments (e.g., 031 → 31)
+            code = Regex.Replace(code, @"(\D)0+(\d{2,})", "$1$2");
+
+            return code;
+        }
+
+        // Cache all directories once per app lifetime
+        private static List<string>? _allProductDirsCache = null;
 
         private List<string> FindProductImages(string categoryPath, string imageSearchCode, List<string> category)
         {
             var localImages = new List<string>();
+            string rootPath = Path.Combine(_env.WebRootPath, "Products");
 
-            if (Directory.Exists(categoryPath))
+            if (!Directory.Exists(rootPath))
+                return new List<string> { "/no-image.png" };
+
+            // ✅ Initialize cache once for all gender folders
+            if (_allProductDirsCache == null)
             {
-                var matchingDirs = Directory.GetDirectories(categoryPath)
-                 .Where(dir =>
-                 {
-                     string folderName = Path.GetFileName(dir);
-
-                     // Direct match with imageSearchCode (base code without size)
-                     if (folderName.Equals(imageSearchCode, StringComparison.OrdinalIgnoreCase))
-                         return true;
-
-                     // Match pattern like "01. N352-1L003A034" or "05. N350-1L003A036"
-                     if (folderName.Contains(". " + imageSearchCode, StringComparison.OrdinalIgnoreCase))
-                         return true;
-
-                     // Handle variations with spaces and normalization
-                     string normalizedFolder = folderName.Replace(" ", "").Replace("-", "").ToUpper();
-                     string normalizedSearch = imageSearchCode.Replace(" ", "").Replace("-", "").ToUpper();
-                     if (normalizedFolder.Contains(normalizedSearch))
-                         return true;
-
-                     return false;
-                 })
-                 .OrderBy(dir =>
-                 {
-                     string folderName = Path.GetFileName(dir);
-                     // Prioritize numbered folders first
-                     if (folderName.Contains(". "))
-                     {
-                         string[] parts = folderName.Split(new string[] { ". " }, StringSplitOptions.RemoveEmptyEntries);
-                         if (int.TryParse(parts[0], out int num))
-                             return num;
-                     }
-                     return 1000; // Put non-numbered folders at the end
-                 });
-
-                bool imageFound = false;
-                foreach (var dir in matchingDirs)
+                _allProductDirsCache = new List<string>();
+                var genderFolders = new[] { "WOMAN", "MAN", "KIDS" };
+                foreach (var gender in genderFolders)
                 {
-                    var foundImages = Directory.GetFiles(dir)
-                        .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                        .Where(f => !Path.GetFileName(f).StartsWith("P ") &&
-                                   !char.IsDigit(Path.GetFileName(f)[0]) &&
-                                   !Path.GetFileName(f).Equals("index.html", StringComparison.OrdinalIgnoreCase))
-                        .Select(f => Path.Combine("/Products", category[0], Path.GetFileName(dir), Path.GetFileName(f)).Replace("\\", "/"))
-                        .ToList();
-
-                    if (foundImages.Any())
-                    {
-                        var orderedImages = foundImages
-                            .OrderByDescending(img =>
-                                img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
-                                img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
-                            .ThenBy(img => img)
-                            .ToList();
-
-                        localImages = orderedImages;
-                        imageFound = true;
-                        break;
-                    }
-                }
-
-                // If no images found, add default no-image placeholder
-                if (!imageFound)
-                {
-                    localImages = new List<string> { "/no-image.png" };
+                    var path = Path.Combine(rootPath, gender);
+                    if (Directory.Exists(path))
+                        _allProductDirsCache.AddRange(Directory.GetDirectories(path, "*", SearchOption.AllDirectories));
                 }
             }
-            else
+
+            // ✅ Normalize both product code and folder names
+            string normalizedSearch = NormalizeCode(imageSearchCode);
+
+            // Fuzzy match directories
+            var matchingDirs = _allProductDirsCache
+                .Where(dir =>
+                {
+                    string folderName = Path.GetFileName(dir);
+                    string normalizedFolder = NormalizeCode(folderName);
+
+                    // Fuzzy match logic (prefix, suffix, or partial overlap)
+                    bool prefixMatch = normalizedFolder.StartsWith(normalizedSearch[..Math.Min(10, normalizedSearch.Length)]);
+                    bool midMatch = normalizedFolder.Contains(normalizedSearch);
+                    bool suffixMatch = normalizedFolder.EndsWith(normalizedSearch[^6..]);
+
+                    return prefixMatch || midMatch || suffixMatch;
+                })
+                .Distinct()
+                .ToList();
+
+            if (!matchingDirs.Any())
             {
-                // If category path doesn't exist, use default no-image
+                LogMissingImage(imageSearchCode, category);
+                return new List<string> { "/no-image.png" };
+            }
+
+            foreach (var dir in matchingDirs)
+            {
+                var foundImages = Directory.GetFiles(dir)
+                    .Where(f => f.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                f.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                    .Where(f => !Path.GetFileName(f).Equals("index.html", StringComparison.OrdinalIgnoreCase))
+                    .Select(f =>
+                    {
+                        var relativePath = f.Replace(_env.WebRootPath, "").Replace("\\", "/");
+                        if (!relativePath.StartsWith("/")) relativePath = "/" + relativePath;
+                        return relativePath;
+                    })
+                    .ToList();
+
+                if (foundImages.Any())
+                {
+                    localImages = foundImages
+                        .OrderByDescending(img => img.EndsWith("_1.jpg", StringComparison.OrdinalIgnoreCase) ||
+                                                  img.EndsWith("_1.png", StringComparison.OrdinalIgnoreCase))
+                        .ThenBy(img => img)
+                        .ToList();
+                    break;
+                }
+            }
+
+            if (!localImages.Any())
+            {
+                LogMissingImage(imageSearchCode, category);
                 localImages = new List<string> { "/no-image.png" };
             }
 
             return localImages;
+        }
+
+
+
+        private void LogMissingImage(string code, List<string> category)
+        {
+            try
+            {
+                string logDir = Path.Combine(_env.ContentRootPath, "logs");
+                Directory.CreateDirectory(logDir);
+                string logPath = Path.Combine(logDir, "missing_images.txt");
+
+                string line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} | Code: {code} | Category: {(category.Count > 0 ? category[0] : "Unknown")}";
+                File.AppendAllLines(logPath, new[] { line });
+            }
+            catch { /* ignore logging errors */ }
         }
 
         public async Task<ApiData> GetByIdAsync(string productId)
